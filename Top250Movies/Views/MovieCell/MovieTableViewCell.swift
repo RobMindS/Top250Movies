@@ -2,17 +2,17 @@
 //  MovieTableViewCell.swift
 //  Top250Movies
 //
-//  Created by admin on 18.07.2022.
+//  Created by admin on 03.08.2022.
 //
 
 import UIKit
 
 class MovieTableViewCell: UITableViewCell {
-
+    
     @IBOutlet weak var posterImageView: UIImageView!
     @IBOutlet weak var movieNameLabel: UILabel!
     @IBOutlet weak var movieRankLabel: UILabel!
-    
+
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -23,5 +23,5 @@ class MovieTableViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
-
+    
 }

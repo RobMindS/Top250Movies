@@ -21,7 +21,7 @@ class WebService {
     let apiKey = "/k_2xdwfc4d"
     
     
-    func getMovies(requestUrl: RequestUrl!, completionHandler: @escaping ([TopMovies]) -> Void) {
+    func getMovies(requestUrl: RequestUrl!, completionHandler: @escaping ([MovieModel]) -> Void) {
         let url = URL(string: api + requestUrl.rawValue + apiKey)!
         let task = URLSession.shared.dataTask(with: url) { data, response, error in
             guard let data = data else { return }

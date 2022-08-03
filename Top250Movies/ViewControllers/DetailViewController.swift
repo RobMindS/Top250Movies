@@ -15,7 +15,7 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var imDbRatingCountLabel: UILabel!
     @IBOutlet weak var crewLabel: UILabel!
     
-    var movie: TopMovies?
+    var movie: MovieModel?
     
 
     override func viewDidLoad() {

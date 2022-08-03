@@ -15,10 +15,10 @@ class TopMoviesTableViewController: UITableViewController, UISearchBarDelegate {
     var btnCancelSearch: UIBarButtonItem!
     
     let webService = WebService()
-    var firstTenMovies: [TopMovies] = []
-    var filterMovies: [TopMovies] = []
+    private var firstTenMovies = [MovieModel]()
+    private var filterMovies = [MovieModel]()
     
-    //Constants
+    // Constants
     struct Constants {
         static let cellHeight: CGFloat = 220
         static let searchBarHeight: CGFloat = 40
@@ -29,28 +29,10 @@ class TopMoviesTableViewController: UITableViewController, UISearchBarDelegate {
         super.viewDidLoad()
         
         getData()
-        
-        pullControl.addTarget(self, action: #selector(getData), for: .valueChanged)
-        self.tableView.refreshControl = pullControl
-        
+        setTableView()
         hideKeyboardWhenTappedAround()
     }
-    
-    
-    //MARK: Segue
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        switch segue.identifier {
-            
-        case "movieDetail":
-            guard let detailVC = segue.destination as? DetailViewController else { return }
-            if let data = sender as? TopMovies {
-                detailVC.movie = data
-            }
-            
-        default:
-            break
-        }
-    }
+
     
     @objc func getData() {
         webService.getMovies(requestUrl: .top250Movies, completionHandler: { result in
@@ -61,6 +43,12 @@ class TopMoviesTableViewController: UITableViewController, UISearchBarDelegate {
                 self.pullControl.endRefreshing()
             }
         })
+    }
+    
+    func setTableView() {
+        pullControl.addTarget(self, action: #selector(getData), for: .valueChanged)
+        self.tableView.refreshControl = pullControl
+        self.tableView.register(UINib(nibName: "MovieTableViewCell", bundle: nil), forCellReuseIdentifier: "MovieTableViewCell")
     }
     
     
@@ -88,8 +76,10 @@ class TopMoviesTableViewController: UITableViewController, UISearchBarDelegate {
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        self.firstTenMovies = self.filterMovies.filter{$0.title.lowercased().hasPrefix(searchText.lowercased()) }
-        self.tableView.reloadData()
+        DispatchQueue.main.async {
+            self.firstTenMovies = self.filterMovies.filter{$0.title.lowercased().hasPrefix(searchText.lowercased()) }
+            self.tableView.reloadData()
+        }
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
@@ -110,6 +100,12 @@ class TopMoviesTableViewController: UITableViewController, UISearchBarDelegate {
         }
     }
     
+    func openMovieDetailVC(movie: MovieModel) {
+        let movieDetailVC = DetailViewController.instantiateFromAppStoryboard(appStoryboard: .DetailMovieStoryboard)
+        movieDetailVC.movie = movie
+        self.navigationController?.pushViewController(movieDetailVC, animated: true)
+    }
+    
     
     // MARK: - Table view data source
     
@@ -122,7 +118,7 @@ class TopMoviesTableViewController: UITableViewController, UISearchBarDelegate {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: "movieCell", for: indexPath) as? MovieTableViewCell else { return UITableViewCell() }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "MovieTableViewCell", for: indexPath) as? MovieTableViewCell else { return UITableViewCell() }
         cell.posterImageView.downloaded(from: firstTenMovies[indexPath.row].image)
         cell.movieNameLabel.text = firstTenMovies[indexPath.row].title
         cell.movieRankLabel.text = "Rank: " + firstTenMovies[indexPath.row].rank
@@ -134,7 +130,7 @@ class TopMoviesTableViewController: UITableViewController, UISearchBarDelegate {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.performSegue(withIdentifier: "movieDetail", sender: firstTenMovies[indexPath.row])
+        openMovieDetailVC(movie: firstTenMovies[indexPath.row])
     }
     
 }

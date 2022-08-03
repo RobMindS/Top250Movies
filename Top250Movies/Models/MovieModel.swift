@@ -1,6 +1,6 @@
 //
-//  Top250Movies.swift
-//  Top250Movies
+//  MovieModel.swift
+//  MovieModel
 //
 //  Created by admin on 18.07.2022.
 //
@@ -8,11 +8,11 @@
 import Foundation
 
 struct Data: Decodable {
-    var items: [TopMovies] = []
+    var items: [MovieModel] = []
 }
 
 
-struct TopMovies: Decodable {
+struct MovieModel: Decodable {
     
     var id: String = ""
     var rank: String = ""
